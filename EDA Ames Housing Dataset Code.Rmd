@@ -1,0 +1,186 @@
+---
+title: "Ames Housing EDA"
+author: "Mochammad Arie Nugroho"
+date: "12/27/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+library(dplyr)
+library(tidyr)
+library(stringr)
+library(lubridate)
+library(ggplot2)
+library(plotly)
+
+df <- read.csv('House Price.csv')
+str(df)
+```
+
+# 1. Start with the target
+Perform a univariate analysis of the target variable, namely SalePrice and describe what insights can be obtained.
+
+```{r}
+##find missing value:
+df %>% is.na() %>% colSums()
+#no missing value in SalePrice
+
+##check mean, mode, Min Value, Max Value, and Standard Deviation 
+
+getmode <- function(v) {
+  uniqv <- unique(v)
+  uniqv[which.max(tabulate(match(v, uniqv)))]
+}
+
+getmode(df$SalePrice) #mode
+sd(df$SalePrice) #SD
+summary(df$SalePrice) #min, max, median
+
+ggplot(data = df, mapping = aes(x = SalePrice)) + 
+  geom_histogram(bins = 50, color = "white", fill = "coral") #Visualize histogram SalePrice
+
+ggplot(df, aes(SalePrice)) +
+  geom_histogram(binwidth = 100000) #Visualize histogram with binwidth 100000
+```
+
+## INSIGHT
+- From the histogram display, it can be concluded that the sale price data is not normally distributed and tends to be skewed to the left
+- the most sold house with a price of 140000.
+- The most expensive house is sold for 755000 which is an outlier from the data.
+- Saleprice house data is distributed under the price of 250000.
+
+
+# Find the 5 variables with the strongest correlation (positively or negatively) with SalePrice, and do you think the results make sense?
+
+```{r}
+cor.test(df$MSSubClass,df$SalePrice) #lemah negatif -0.084
+cor.test(df$LotFrontage,df$SalePrice) #lemah positif 0.35
+cor.test(df$LotArea,df$SalePrice) #lemah positif 0.26
+cor.test(df$OverallQual,df$SalePrice) #kuat positif 0.790
+cor.test(df$OverallCond,df$SalePrice) #lemah negatif -0.077
+cor.test(df$YearBuilt,df$SalePrice) #kuat positif 0.522
+cor.test(df$YearRemodAdd,df$SalePrice) #kuat positif 0.507
+cor.test(df$MasVnrArea,df$SalePrice) #lemah positif 0.477
+cor.test(df$BsmtFinSF1,df$SalePrice) #lemah positif 0.386
+cor.test(df$BsmtFinSF2,df$SalePrice) #lemah negatif -0.011
+cor.test(df$BsmtUnfSF,df$SalePrice) #lemah positif 0.214
+cor.test(df$TotalBsmtSF,df$SalePrice) #kuat positif 0.613
+cor.test(df$X1stFlrSF,df$SalePrice) #kuat positif 0.605
+cor.test(df$X2ndFlrSF,df$SalePrice) #lemah positif 0.319
+cor.test(df$LowQualFinSF,df$SalePrice) #lemah negatif -0.0256
+cor.test(df$GrLivArea,df$SalePrice) #kuat positif 0.708
+cor.test(df$BsmtFullBath,df$SalePrice)#lemah positif 0.227
+cor.test(df$BsmtHalfBath,df$SalePrice) #lemah negatif -0.0168
+cor.test(df$BedroomAbvGr,df$SalePrice) #lemah positif 0.168
+cor.test(df$KitchenAbvGr,df$SalePrice) #lemah negatif -0.135
+cor.test(df$TotRmsAbvGrd,df$SalePrice) #kuat positif 0.533
+cor.test(df$Fireplaces,df$SalePrice) #lemah positif 0.466
+cor.test(df$GarageYrBlt,df$SalePrice) #lemah positif 0.486
+cor.test(df$GarageCars,df$SalePrice) #kuat positif 0.640
+cor.test(df$GarageArea,df$SalePrice) #kuat positif 0.623
+cor.test(df$WoodDeckSF,df$SalePrice) #lemah positif 0.324
+cor.test(df$OpenPorchSF,df$SalePrice) #lemah positif 0.315
+cor.test(df$EnclosedPorch,df$SalePrice) #lemah negatif -0.128
+cor.test(df$X3SsnPorch,df$SalePrice) #lemah positif 0.044
+cor.test(df$ScreenPorch,df$SalePrice) #lemah positif 0.111
+cor.test(df$PoolArea,df$SalePrice) #lemah positif 0.0924
+cor.test(df$MiscVal,df$SalePrice) #lemah negatif -0.0211
+cor.test(df$MoSold,df$SalePrice) #lemah positif 0.0464
+cor.test(df$YrSold,df$SalePrice) # lemah negatif -0.0289
+```
+## INSIGHT:
+### BERKORELASI KUAT POSITIF  
+1.OverallQual  : ini masuk akal apabila semakin tinggi SalePrice maka kualitas dari rumah tersebut bisa dikatakan semakin bagus dari range 1-10
+2.GrLivArea    : ini masuk akal apabila semakin tinggi SalePrice suatu rumah maka rumah tersebut akan memiliki ukuran ruang tamu yg luas juga
+3.GarageCars   : ini masuk akal apabila semakin tinggi SalePrice maka rumah tersebut akan memiliki garasi yang dapat memuat beberapa mobil lebih banyak dibandingkan rumah yg harganya lebih murah
+4.GarageArea   : ini masuk akal karena rumah yg SalePricenya tinggi akan memiliki luas garasi yang tinggi juga
+5.TotalBsmtSF  : ini masuk akal karena rumah yg SalePricenya tinggi memiliki Basement yg luas pula
+
+### BERKORELASI NEGATIF
+1.EnclosedPorch  : Saleprice berkorelasi lemah negatif terhadap area teras tertutup sehigga dapat diabaikan dan ini tidak masuk akal karena baik itu rumah dengan saleprice rendah ataupun tinggi rata2 tidak memiliki teras tertutup 
+2.KitchenAbvGr   : SalePrice berkorelasi lemah negatif terhadap KitchenAbvGr sehingga dapat diabaikan dan ini dapat dikatakan tidak masuk akal/tidak mempengaruhi SalePrice karena rata2 rumah memiliki daput 1 baik itu yg murah ataupun yg mahal.
+3.LowQualFinSF   : SalePrice berkorelasi lemah negatif terhadap LowQualFinSF dan ini dapat dikatakan masuk akal karena semakin tinggi harganya maka luas area lantai berkualitas rendah semakin kecil, namun ini dapat juga diabaikan karena berkorelasi rendah.
+4.MSSubClass     : Saleprice berkorelasi lemah negatif terhadap MSSubClass sehingga ini dapat diabaikan dan ini juga tidak masuk akal karena setiap angka dari MSSubClass merupakan data kategorical dimana SalePrice tertinggi berada di categorical 60 yang merupakan rumah baru yg memiliki 2 lantai.
+5.OverallCond    : SalePrice berkorelasi lemah negatif terhadap OverallCond sehingga ini dapat diabaikan dan ini tidak masuk akal karena saleprice tertinggi dan terendah berada di nilai OverallCond yang sama yaitu 5.
+
+# It is never hurt to test basic knowledge.
+There is a view that a low OverallQual has a lower price tendency, and a house with a higher OverallQual Quality has a higher price tendency. Perform an analysis of the relationship between OverallQual and SalePrice.
+
+```{r}
+df %>% ggplot(aes(x=OverallQual,y=SalePrice)) + geom_point()
+cor.test(df$OverallQual,df$SalePrice) #kuat positif 0.790
+```
+
+## INSIGHTS:
+OverallQual can be said to be a categorical variable which is described in numerical form 1-10, where 1 is very bad and 10 is very good. a high price has a high OverallQual. Based on the correlation, it can be seen that SalePrice and OverallQUall have a very strong correlation, namely 0.790 and it can be concluded that OverallQual greatly affects SalePrice from home.
+
+
+# Beware of false correlation.
+There is a tendency that new homes have a higher price. However, we should not be in a hurry to conclude that a new house must have a higher selling price, because if the new house that is built is not good, of course the price cannot be high either. What do you think makes a new home a higher value?
+
+```{r}
+df %>% ggplot(aes(x=YearBuilt,y=YearRemodAdd)) + geom_point()
+
+df %>% 
+  mutate(df, usia_rumah = YearRemodAdd-YearBuilt, .after ="SalePrice" ) %>% 
+  ggplot(aes(x=usia_rumah,y=SalePrice)) + geom_point()
+```
+
+## INSIGHTS:
+The thing that makes new homes have a higher value is when they do YearRemodadd with a short period of time with YearBuilt. Through visualization, it can be seen that houses that were carried out YearRemodadd and YearBuilt in the same year tend to have a higher sale price.
+
+
+# Haunted places(?)
+Pay attention to the following scatter plot
+```{r}
+df %>% ggplot(aes(x=GrLivArea,y=SalePrice)) + geom_point()
+```
+
+On the right, there are two houses, which have a very large GreenLivingArea, but the SalePrice is cheap. Lets analyze why the two houses are cheap.
+
+```{r}
+df %>% ggplot(aes(x=GrLivArea,y=SalePrice)) + 
+  geom_point()+
+  coord_cartesian(xlim=c(4500,6000)) #visualize house with GrLivArea >4500
+x<- filter(df, GrLivArea>4500) #filter house with GrLivArea diatas 4500
+```
+
+## INSIGHTS:
+probably because even though the house has a large GrLvArea area, the house is on a bad contour where its position is at a sharp turn and on an incline. houses with LandCountour type 'Bnk' do not have a high selling value.
+
+
+
+# Do EDA freely and share 1 insight if you find it interesting.
+
+```{r}
+df %>%
+  mutate(df, Month_Sold_Name = ifelse (MoSold==1, "January", ifelse (MoSold==2,"February",ifelse (MoSold==3,"March",ifelse (MoSold==4,"April",ifelse (MoSold==5,"May",ifelse(MoSold==6,"June",ifelse(MoSold==7,"July",ifelse(MoSold==8,"August",ifelse(MoSold==9,"september",ifelse(MoSold==10,"October",ifelse(MoSold==11,"November","December")))))))))))) %>% 
+  count(Month_Sold_Name) %>%
+  ggplot(aes(x = reorder(Month_Sold_Name,n), y = n)) +
+  geom_bar(stat = 'identity',fill='deepskyblue', alpha=0.7) +
+  labs(title = "Visualization Top Month Sold",
+       x = "Month",
+       y = "House Sold") +
+  coord_flip() +
+  geom_label(aes(label=n)) +
+  theme_minimal() +
+  theme(panel.grid.major.y = element_blank(),
+        panel.grid.minor.y = element_blank(),
+        panel.grid.minor.x = element_blank()) 
+```
+
+## INSIGHTS:
+  - The most sold homes are in June, July and May.
+  - The least sold homes are in February, January and December
+  - it can be said that the house sells better in the middle of the year and the worst sales at the beginning and end of the year.
+  - This can be caused because in the middle of the year a person's financial average can be said to be stable because there is no mid-year holiday or big day in that month.
+  - While at the beginning of the year, it can be said that people spend a lot of time on holidays or leave because the beginning and end of the year are Christmas and New Year's holidays.
+  - so that people tend to be reluctant to buy a house when they do a lot of spending, this is what causes the drop in home sales in those months.
+  - To anticipate this, discounts can be done at the beginning of the year or the end of the year to attract people to buy houses at the end and beginning of the year.
+
+
