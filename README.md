@@ -99,3 +99,5 @@ Languange : R Programming (filetype: *.Rmd*)
 4. *Beware of false correlation.* Ada kecenderungan bahwa rumah baru memiliki harga yang lebih tinggi. Akan tetapi, kita tidak boleh gegabah untuk menyimpulkan bahwa rumah baru pasti memiliki harga jual yang lebih tinggi, karena apabila rumah baru yang dibangun tidak baik, tentu harganya juga tidak bisa tinggi. Kira-kira apa hal yang membuat rumah baru memiliki nilai yang lebih tinggi? *Hint : Cek korelasi antara YearBuilt dengan prediktor lainnya*
 5. Haunted place(?) Perhatikan scatter plot berikut <code> df %>% ggplot(aes(x=GrLivArea,y=SalePrice)) + geom_point()</code> . Disebelah kanan, ada dua rumah, yang memiliki GreenLivingArea sangat besar, tetapi SalePrice nya murah. Coba analisis kenapa kedua rumah tersebut murah.
 6. Lakukan EDA secara bebas dan sampaikan 1 insight yang sekiranya menarik.
+
+## [Click Here  for Visualize and Analyze](https://arienugroho050396.github.io/project2.html) :thumbsup: :thumbsup: :thumbsup: 
