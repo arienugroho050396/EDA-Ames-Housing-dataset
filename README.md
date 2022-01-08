@@ -90,3 +90,11 @@ Languange : R Programming (filetype: *.Rmd*)
 - **YrSold** — Year Sold
 - **SaleType** — Type of sale
 - **SaleCondition** — Condition of sale
+
+## Question Inside the Program
+
+1. *Start with the target.* Lakukan analisis univariat terhadap variabel target, yakni SalePrice dan deskripsikan apa saja insight yang bisa didapat.
+2. Cari 5 variabel dengan korelasi paling kuat(secara positive ataupun negative) terhadap SalePrice, dan kira-kira apakah hasilnya masuk akal?
+3. *It is never hurt to test basic knowledge.* Ada pandangan bahwa OverallQual rendah memiliki kecenderungan harga yang lebih rendah, dan rumah dengan OverallQual memiliki kecenderungan harga yang lebih tinggi. Lakukan analisis terhaadp hubungan OverallQual dan SalePrice.
+4. *Beware of false correlation.* Ada kecenderungan bahwa rumah baru memiliki harga yang lebih tinggi. Akan tetapi, kita tidak boleh gegabah untuk menyimpulkan bahwa rumah baru pasti memiliki harga jual yang lebih tinggi, karena apabila rumah baru yang dibangun tidak baik, tentu harganya juga tidak bisa tinggi. Kira-kira apa hal yang membuat rumah baru memiliki nilai yang lebih tinggi? *Hint : Cek korelasi antara YearBuilt dengan prediktor lainnya*
+5. Haunted place(?) Perhatikan scatter plot berikut 'df %>% ggplot(aes(x=GrLivArea,y=SalePrice)) + geom_point()'
